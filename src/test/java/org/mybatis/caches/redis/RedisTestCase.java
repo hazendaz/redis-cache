@@ -1,5 +1,5 @@
 /*
- *    Copyright 2015-2023 the original author or authors.
+ *    Copyright 2015-2024 the original author or authors.
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -19,6 +19,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import java.io.File;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -34,7 +37,15 @@ final class RedisTestCase {
 
   @BeforeAll
   static void newCache() {
+    setJvmTrustStore("src/test/resources/truststore.jceks", "jceks");
     cache = new RedisCache(DEFAULT_ID);
+  }
+
+  private static void setJvmTrustStore(String trustStoreFilePath, String trustStoreType) {
+    assertTrue(new File(trustStoreFilePath).exists(),
+        String.format("Could not find trust store at '%s'.", trustStoreFilePath));
+    System.setProperty("javax.net.ssl.trustStore", trustStoreFilePath);
+    System.setProperty("javax.net.ssl.trustStoreType", trustStoreType);
   }
 
   @Test
