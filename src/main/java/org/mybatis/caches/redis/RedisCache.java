@@ -18,6 +18,8 @@ package org.mybatis.caches.redis;
 import java.util.Map;
 import java.util.concurrent.locks.ReadWriteLock;
 
+import javax.net.ssl.SSLParameters;
+
 import org.apache.ibatis.cache.Cache;
 
 import redis.clients.jedis.Jedis;
@@ -46,10 +48,20 @@ public final class RedisCache implements Cache {
     }
     this.id = id;
     redisConfig = RedisConfigurationBuilder.getInstance().parseConfiguration();
-    pool = new JedisPool(redisConfig, redisConfig.getHost(), redisConfig.getPort(), redisConfig.getConnectionTimeout(),
-        redisConfig.getSoTimeout(), redisConfig.getPassword(), redisConfig.getDatabase(), redisConfig.getClientName(),
-        redisConfig.isSsl(), redisConfig.getSslSocketFactory(), redisConfig.getSslParameters(),
-        redisConfig.getHostnameVerifier());
+    if (redisConfig.isSsl()) {
+      RedisTrustStoreSslSocketFactory factory = new RedisTrustStoreSslSocketFactory(redisConfig.getSslKeyStoreType(),
+          redisConfig.getSslTrustStoreFile(), redisConfig.getSslProtocol(), redisConfig.getSslAlgorithm());
+
+      pool = new JedisPool(redisConfig, redisConfig.getHost(), redisConfig.getPort(),
+          redisConfig.getConnectionTimeout(), redisConfig.getSoTimeout(), redisConfig.getPassword(),
+          redisConfig.getDatabase(), redisConfig.getClientName(), redisConfig.isSsl(), factory.getSslSocketFactory(),
+          new SSLParameters(), new RedisBasicHostnameVerifier());
+    } else {
+      // Socket timeout is same as timeout
+      pool = new JedisPool(redisConfig, redisConfig.getHost(), redisConfig.getPort(),
+          redisConfig.getConnectionTimeout(), redisConfig.getPassword(), redisConfig.getDatabase(),
+          redisConfig.getClientName());
+    }
   }
 
   // TODO Review this is UNUSED
