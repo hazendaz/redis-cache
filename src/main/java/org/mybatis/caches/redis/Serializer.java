@@ -35,4 +35,12 @@ public interface Serializer {
    */
   Object unserialize(byte[] bytes);
 
+  /**
+   * Since kryo 5, registration required has been set 'true' for security. As such, mybatis did not expose this fact and
+   * therefore was insecure in usage as never set to 'true'. To support version 5 and properly allow users to be
+   * insecure if they choose so, this is being exposed to be called after creating the INSTANCE. It otherwise will
+   * remain as 'true' by default per kryo 5.
+   */
+  public void registrationRequired(boolean required);
+
 }

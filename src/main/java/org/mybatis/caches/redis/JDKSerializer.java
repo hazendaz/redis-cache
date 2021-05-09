@@ -54,4 +54,11 @@ public enum JDKSerializer implements Serializer {
     }
   }
 
+  /**
+   * Does nothing with jdk serializer
+   */
+  public void registrationRequired(boolean required) {
+    // does nothing
+  }
+
 }
