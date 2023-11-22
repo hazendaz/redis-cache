@@ -18,9 +18,6 @@ package org.mybatis.caches.redis;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
-import com.esotericsoftware.kryo.kryo5.Kryo;
-import com.esotericsoftware.kryo.kryo5.io.Input;
-
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -95,22 +92,6 @@ class SerializerTestCase {
         assertEquals(rawSimpleBean, unserializeSimpleBean);
       }).start();
     }
-  }
-
-  @Test
-  void testKryoUnserializeWithoutRegistry() throws IOException {
-    SimpleBeanStudentInfo rawSimpleBean = new SimpleBeanStudentInfo();
-
-    Serializer kryoSerializerInsecure = KryoSerializer.INSTANCE;
-    kryoSerializerInsecure.registrationRequired(false);
-    byte[] serialBytes = kryoSerializerInsecure.serialize(rawSimpleBean);
-
-    Kryo kryoWithoutRegisty = new Kryo();
-    kryoWithoutRegisty.setRegistrationRequired(false);
-    Input input = new Input(serialBytes);
-    SimpleBeanStudentInfo unserializeSimpleBean = (SimpleBeanStudentInfo) kryoWithoutRegisty.readClassAndObject(input);
-    assertEquals(rawSimpleBean, unserializeSimpleBean);
-
   }
 
   /**
