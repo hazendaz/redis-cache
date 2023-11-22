@@ -41,10 +41,11 @@ class SerializerUnregisteredTest {
 
     byte[] serialBytes = kryoSerializer.serialize(rawSimpleBean);
 
-    Kryo kryoWithoutRegisty = new Kryo();
-    kryoWithoutRegisty.setRegistrationRequired(false);
+    ThreadLocal<Kryo> kryoWithoutRegisty = ThreadLocal.withInitial(Kryo::new);
+    kryoWithoutRegisty.get().setRegistrationRequired(false);
     Input input = new Input(serialBytes);
-    SimpleBeanStudentInfo unserializeSimpleBean = (SimpleBeanStudentInfo) kryoWithoutRegisty.readClassAndObject(input);
+    SimpleBeanStudentInfo unserializeSimpleBean = (SimpleBeanStudentInfo) kryoWithoutRegisty.get()
+        .readClassAndObject(input);
     assertEquals(rawSimpleBean, unserializeSimpleBean);
   }
 
