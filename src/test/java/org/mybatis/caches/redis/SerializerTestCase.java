@@ -35,6 +35,7 @@ class SerializerTestCase {
   @BeforeEach
   void setup() {
     kryoSerializer = KryoSerializer.INSTANCE;
+    kryoSerializer.registrationRequired(false);
     jdkSerializer = JDKSerializer.INSTANCE;
   }
 
